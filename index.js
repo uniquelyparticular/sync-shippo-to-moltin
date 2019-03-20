@@ -1,5 +1,4 @@
-const { buffer, send } = require('micro')
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
+const { json, send } = require('micro')
 const { MemoryStorageFactory } = require('@moltin/sdk')
 const moltinGateway = require('@moltin/sdk').gateway
 const moltin = moltinGateway({
@@ -9,19 +8,7 @@ const moltin = moltinGateway({
   application: 'demo-sync-shippo-to-moltin'
 })
 const cors = require('micro-cors')({
-  allowMethods: ['POST'],
-  exposeHeaders: ['stripe-signature'],
-  allowHeaders: [
-    'stripe-signature',
-    'user-agent',
-    'x-forwarded-proto',
-    'X-Requested-With',
-    'Access-Control-Allow-Origin',
-    'X-HTTP-Method-Override',
-    'Content-Type',
-    'Authorization',
-    'Accept'
-  ]
+  allowMethods: ['POST']
 })
 
 const _toJSON = error => {
@@ -60,50 +47,22 @@ module.exports = cors(async (req, res) => {
   }
 
   try {
-    const sig = await req.headers['stripe-signature']
-    const body = await buffer(req)
-
-    // NOTE: expects metadata field to be populated w/ moltin order data when charges were first created, email is automatically there
     const {
-      type,
       data: {
-        object: {
-          id: reference,
-          status,
-          refunded,
-          metadata: { email, order_id }
-        }
+        tracking_status: { status: delivery_status },
+        extra: { order_id }
       }
-    } = await stripe.webhooks.constructEvent(
-      body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    )
+    } = await json(req)
 
-    if (
-      type === 'charge.refunded' &&
-      status === 'succeeded' &&
-      refunded === true
-    ) {
-      // if refunded !== true, then only partial (moltin Order.Payment does not support partial_refund status)
-      if (order_id) {
-        moltin.Transactions.All({ order: order_id })
-          .then(transactions => {
-            const moltinTransaction = transactions.data.find(
-              transaction => transaction.reference === reference
-            )
-
-            moltin.Transactions.Refund({
-              order: order_id,
-              transaction: moltinTransaction.id
-            })
-              .then(moltinRefund => {
-                return send(res, 200, JSON.stringify({ received: true }))
-              })
-              .catch(error => handleError(error))
-          })
-          .catch(error => handleError(error))
-      }
+    if (order_id && delivery_status === 'DELIVERED') {
+      moltin.Orders.Update(order_id, {
+        shipping: 'fulfilled'
+      })
+        .then(order => {
+          console.info(order)
+          return send(res, 200, JSON.stringify({ received: true }))
+        })
+        .catch(error => handleError(error))
     }
   } catch (error) {
     handleError(error)
