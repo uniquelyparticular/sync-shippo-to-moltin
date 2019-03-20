@@ -41,7 +41,7 @@ Start ngrok (change ngrok port below from 3000 if yarn dev deployed locally on d
 ngrok http 3000
 ```
 
-Make a note of the https 'URL' ngrok provides.
+Make a note of the https `ngrok URL` provided.
 
 ## ⛽️ Usage
 
@@ -56,3 +56,5 @@ Next head over to the Shippo [API Settings](https://app.goshippo.com/settings/ap
 ## 🚀 Deploy
 
 You can easily deploy this function to [now](https://now.sh).
+
+_Contact [Adam Grohs](https://www.linkedin.com/in/adamgrohs/) @ [Particular.](https://uniquelyparticular.com) for any questions._
