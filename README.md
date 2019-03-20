@@ -1,6 +1,6 @@
 # @particular./sync-shippo-to-moltin
 
-> Update order shipping status when delivered in Shippo
+> Update Moltin order shipping status when delivered in Shippo
 
 Asynchronous microservice that is triggered by [Shippo](https://goshippo.com) webhooks to update Order data inside of [moltin](https://moltin.com).
 
