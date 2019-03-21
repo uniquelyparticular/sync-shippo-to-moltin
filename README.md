@@ -1,5 +1,7 @@
 # @particular./sync-shippo-to-moltin
 
+[![npm version](https://badge.fury.io/js/%40particular.%2Fsync-shippo-to-moltin.svg)](https://badge.fury.io/js/%40particular.%2Fsync-shippo-to-moltin)
+
 > Update Moltin order shipping status when delivered in Shippo
 
 Asynchronous microservice that is triggered by [Shippo](https://goshippo.com) webhooks to update Order data inside of [moltin](https://moltin.com).
