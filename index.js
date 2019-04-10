@@ -88,6 +88,11 @@ module.exports = cors(async (req, res) => {
       tracking_extra = tracking_update.extra
     }
     const { order_id } = tracking_extra
+    // let { order_id } = tracking_extra
+
+    // if (!order_id) {
+    //   order_id = '730589c9-ee68-44b4-a201-bb38a9468abe'
+    // }
 
     if (order_id) {
       if (status === 'DELIVERED') {
@@ -102,7 +107,7 @@ module.exports = cors(async (req, res) => {
             const jsonError = _toJSON(error)
             return send(
               res,
-              jsonError.type === 'StripeSignatureVerificationError' ? 401 : 500,
+              jsonError.errors[0].status ? jsonError.errors[0].status : 500,
               jsonError
             )
           })
@@ -119,10 +124,6 @@ module.exports = cors(async (req, res) => {
     }
   } catch (error) {
     const jsonError = _toJSON(error)
-    return send(
-      res,
-      jsonError.type === 'StripeSignatureVerificationError' ? 401 : 500,
-      jsonError
-    )
+    return send(res, 500, jsonError)
   }
 })
