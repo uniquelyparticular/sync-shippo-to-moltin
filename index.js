@@ -36,15 +36,60 @@ module.exports = cors(async (req, res) => {
     return send(res, 200, 'ok!')
   }
 
+  /*
+  "carrier": "usps",
+  "tracking_number": "9205590164917312751089",
+  "address_from": {
+    "city": "Las Vegas",
+    "state": "NV",
+    "zip": "89101",
+    "country": "US"
+  },
+  "address_to": {
+    "city": "Spotsylvania",
+    "state": "VA",
+    "zip": "22551",
+    "country": "US"
+  },
+  "transaction": "1275c67d754f45bf9d6e4d7a3e205314",
+  "original_eta": "2016-07-23T00:00:00Z",
+  "eta": "2016-07-23T00:00:00Z",
+  "servicelevel": {
+    "token": "usps_priority",
+    "name": "Priority Mail"
+  },
+  "metadata": null,
+  "tracking_status": {
+    "object_created": "2016-07-23T20:35:26.129Z",
+    "object_updated": "2016-07-23T20:35:26.129Z",
+    "object_id": "ce48ff3d52a34e91b77aa98370182624",
+    "status": "DELIVERED",
+    "status_details": "Your shipment has been delivered at the destination mailbox.",
+    "status_date": "2016-07-23T13:03:00Z",
+    "location": {
+      "city": "Spotsylvania",
+      "state": "VA",
+      "zip": "22551",
+      "country": "US"
+    }
+  },
+  */
+
   try {
+    const tracking_update = await json(req)
     const {
       data: {
-        tracking_status: { status: delivery_status },
-        extra: { order_id }
+        tracking_status: { status }
       }
-    } = await json(req)
+    } = tracking_update
 
-    if (order_id && delivery_status === 'DELIVERED') {
+    let tracking_extra = {}
+    if (tracking_update.extra) {
+      tracking_extra = tracking_update.extra
+    }
+    const { order_id } = tracking_extra
+
+    if (order_id && status === 'DELIVERED') {
       moltin.Orders.Update(order_id, {
         shipping: 'fulfilled'
       })
