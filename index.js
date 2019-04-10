@@ -89,22 +89,33 @@ module.exports = cors(async (req, res) => {
     }
     const { order_id } = tracking_extra
 
-    if (order_id && status === 'DELIVERED') {
-      moltin.Orders.Update(order_id, {
-        shipping: 'fulfilled'
-      })
-        .then(order => {
-          console.info(order)
-          return send(res, 200, JSON.stringify({ received: true }))
+    if (order_id) {
+      if (status === 'DELIVERED') {
+        moltin.Orders.Update(order_id, {
+          shipping: 'fulfilled'
         })
-        .catch(error => {
-          const jsonError = _toJSON(error)
-          return send(
-            res,
-            jsonError.type === 'StripeSignatureVerificationError' ? 401 : 500,
-            jsonError
-          )
-        })
+          .then(order => {
+            console.info(order)
+            return send(res, 200, JSON.stringify({ received: true, order_id }))
+          })
+          .catch(error => {
+            const jsonError = _toJSON(error)
+            return send(
+              res,
+              jsonError.type === 'StripeSignatureVerificationError' ? 401 : 500,
+              jsonError
+            )
+          })
+      } else {
+        return send(res, 200, JSON.stringify({ received: true, order_id }))
+      }
+    } else {
+      console.error('missing order_id')
+      return send(
+        res,
+        200,
+        JSON.stringify({ received: true, order_id: 'null' })
+      )
     }
   } catch (error) {
     const jsonError = _toJSON(error)
