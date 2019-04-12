@@ -53,8 +53,6 @@ Next head over to the Shippo [API Settings](https://app.goshippo.com/settings/ap
 | ------------- | ------ | ------------------- |
 | Track Updated | `Test` | _`ngrok URL` above_ |
 
-⚠️ Each time a `charge` is `refunded` this function will be called, but it will only call moltin to update order if 'fully refunded' in Stripe (TODO: if Moltin add support for order.payment = partial_refund then can update to handle).
-
 ## 🚀 Deploy
 
 You can easily deploy this function to [now](https://now.sh).
