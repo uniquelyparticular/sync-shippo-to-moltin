@@ -22,6 +22,10 @@ const _toJSON = error => {
       )
 }
 
+const _toLowercase = string => {
+  return !string ? '' : string.toLocaleLowerCase()
+}
+
 process.on('unhandledRejection', (reason, p) => {
   console.error(
     'Promise unhandledRejection: ',
@@ -33,7 +37,7 @@ process.on('unhandledRejection', (reason, p) => {
 
 module.exports = cors(async (req, res) => {
   if (req.method === 'OPTIONS') {
-    return send(res, 200, 'ok!')
+    return send(res, 204)
   }
 
   /*
@@ -95,7 +99,7 @@ module.exports = cors(async (req, res) => {
     // }
 
     if (order_id) {
-      if (status === 'DELIVERED') {
+      if (_toLowercase(status) === 'delivered') {
         moltin.Orders.Update(order_id, {
           shipping: 'fulfilled'
         })
