@@ -1,6 +1,7 @@
 {
+  "version": 2,
   "name": "demo-sync-shippo-to-moltin",
-  "alias": "particular-demo-sync-shippo-to-moltin.now.sh",
+  "alias": "particular-sync-shippo-to-moltin.now.sh",
   "env": {
     "NODE_ENV": "production",
     "MOLTIN_CLIENT_ID": "@demo-moltin-client-id",
