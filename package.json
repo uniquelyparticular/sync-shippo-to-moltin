@@ -33,7 +33,7 @@
     }
   },
   "dependencies": {
-    "@moltin/sdk": "3.22.0",
+    "@moltin/sdk": "9.13.2",
     "micro": "9.3.4",
     "micro-cors": "0.1.1"
   },
